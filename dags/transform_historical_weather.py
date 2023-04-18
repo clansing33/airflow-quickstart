@@ -5,6 +5,7 @@
 # --------------- #
 
 from airflow.decorators import dag
+from airflow import Dataset
 from pendulum import datetime
 import pandas as pd
 
@@ -64,6 +65,8 @@ def find_hottest_day_birthyear(in_table: pd.DataFrame, birthyear: int):
     return output_df
 
 
+extract_dataset = Dataset("extract")
+
 # --- #
 # DAG #
 # --- #
@@ -79,7 +82,7 @@ def find_hottest_day_birthyear(in_table: pd.DataFrame, birthyear: int):
 @dag(
     start_date=datetime(2023, 1, 1),
     # this DAG runs as soon as the climate and weather data is ready in DuckDB
-    schedule=None,
+    schedule=[extract_dataset],
     catchup=False,
     default_args=gv.default_args,
     description="Runs transformations on climate and current weather data in DuckDB.",

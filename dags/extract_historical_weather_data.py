@@ -5,6 +5,7 @@
 # --------------- #
 
 from airflow.decorators import dag, task
+from airflow import Dataset
 from pendulum import datetime
 import pandas as pd
 
@@ -22,6 +23,8 @@ from include.meterology_utils import (
     get_lat_long_for_cityname,
     get_historical_weather_from_city_coordinates,
 )
+
+start_dataset = Dataset("start")
 
 # --- #
 # DAG #
@@ -47,7 +50,7 @@ def turn_json_into_table(in_json):
 
 @dag(
     start_date=datetime(2023, 1, 1),
-    schedule=None,
+    schedule=[start_dataset],
     catchup=False,
     default_args=gv.default_args,
     description="DAG that retrieves weather information and saves it to a local JSON.",
@@ -64,7 +67,7 @@ def extract_historical_weather_data():
         city_coordinates = get_lat_long_for_cityname(city)
         return city_coordinates
 
-    @task
+    @task(outlets=Dataset('extract'))
     def get_historical_weather(coordinates):
         """Use the 'get_historical_weather_from_city_coordinates' function from the local
         'metereology_utils' module to retrieve the historical weather in a city
