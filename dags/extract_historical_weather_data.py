@@ -87,9 +87,9 @@ def extract_historical_weather_data():
     # to retrieve historical weather data for.
     # Tip: This task can be accomplished by using Dynamic Task Mapping and you only need to modify two lines of code.
 
-    cities = ["Bern", 'Minneapolis', 'Dubuque']
-    coordinates = get_lat_long_for_city.expand(city=cities)
-    historical_weather = get_historical_weather(coordinates=coordinates)
+    # cities = ["Bern", 'Minneapolis', 'Dubuque']
+    coordinates = get_lat_long_for_city.expand(city=["Bern", 'Minneapolis', 'Dubuque'])
+    historical_weather = get_historical_weather.expand(coordinates=coordinates)
 
     # use the @aql.dataframe decorated function to write the (list of) JSON(s) returned from
     # the get_current_weather task as a permanent table to DuckDB
